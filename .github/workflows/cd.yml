@@ -1,0 +1,272 @@
+# =============================================================================
+# CD PIPELINE - Continuous Deployment
+# =============================================================================
+# This workflow handles deployment when code is merged to main or tagged.
+#
+# WHAT IS CD (Continuous Deployment/Delivery)?
+# --------------------------------------------
+# CD extends CI by automatically deploying code that passes all tests.
+# - Continuous Delivery: Automatically prepares code for release
+# - Continuous Deployment: Automatically deploys to production
+#
+# This workflow demonstrates:
+# 1. Automatic versioning and release creation
+# 2. Publishing to PyPI (Python Package Index)
+# 3. Creating GitHub releases
+# 4. Deployment notifications
+# =============================================================================
+
+name: CD Pipeline
+
+on:
+  push:
+    branches: [main]
+    tags:
+      - 'v*.*.*'  # Trigger on version tags like v1.0.0
+
+  # Allow manual trigger for deployments
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+env:
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  # ===========================================================================
+  # JOB 1: Validate Before Deploy
+  # ===========================================================================
+  # Run a final validation before any deployment
+  # ===========================================================================
+  validate:
+    name: ✅ Pre-deployment Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: 📦 Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+          pip install -e .
+
+      - name: 🧪 Run full test suite
+        run: |
+          pytest tests/ -v --cov=src --cov-fail-under=80
+
+      - name: 🏗️ Validate build
+        run: |
+          pip install build
+          python -m build
+
+  # ===========================================================================
+  # JOB 2: Create GitHub Release
+  # ===========================================================================
+  # Automatically create a release when a version tag is pushed
+  # ===========================================================================
+  release:
+    name: 🚀 Create Release
+    runs-on: ubuntu-latest
+    needs: validate
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    permissions:
+      contents: write  # Needed to create releases
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for changelog
+
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: 📦 Build package
+        run: |
+          pip install build
+          python -m build
+
+      - name: 📝 Generate changelog
+        id: changelog
+        run: |
+          # Get the previous tag
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          
+          # Generate changelog
+          if [ -n "$PREV_TAG" ]; then
+            echo "## Changes since $PREV_TAG" > CHANGELOG_RELEASE.md
+            git log --pretty=format:"- %s (%h)" $PREV_TAG..HEAD >> CHANGELOG_RELEASE.md
+          else
+            echo "## Initial Release" > CHANGELOG_RELEASE.md
+            git log --pretty=format:"- %s (%h)" >> CHANGELOG_RELEASE.md
+          fi
+
+      - name: 🚀 Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          body_path: CHANGELOG_RELEASE.md
+          files: |
+            dist/*
+          draft: false
+          prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') || contains(github.ref, 'rc') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ===========================================================================
+  # JOB 3: Publish to PyPI
+  # ===========================================================================
+  # Publish the package to PyPI when a release is created
+  # NOTE: You need to set up PYPI_API_TOKEN in repository secrets
+  # ===========================================================================
+  publish-pypi:
+    name: 📤 Publish to PyPI
+    runs-on: ubuntu-latest
+    needs: release
+    if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, 'alpha') && !contains(github.ref, 'beta')
+
+    # Use GitHub's OIDC for PyPI trusted publishing (recommended)
+    environment:
+      name: pypi
+      url: https://pypi.org/project/python-cicd-demo/
+
+    permissions:
+      id-token: write  # For trusted publishing
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: 📦 Build package
+        run: |
+          pip install build
+          python -m build
+
+      # Option 1: Using trusted publishing (recommended)
+      - name: 📤 Publish to PyPI (Trusted Publishing)
+        uses: pypa/gh-action-pypi-publish@release/v1
+        # No token needed with trusted publishing!
+        continue-on-error: true  # Don't fail if not configured
+
+      # # Option 2: Using API token (alternative)
+      # - name: 📤 Publish to PyPI (API Token)
+      #   env:
+      #     TWINE_USERNAME: __token__
+      #     TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+      #   run: |
+      #     pip install twine
+      #     twine upload dist/*
+
+  # ===========================================================================
+  # JOB 4: Deploy to Staging
+  # ===========================================================================
+  # Deploy to staging environment for testing
+  # ===========================================================================
+  deploy-staging:
+    name: 🎭 Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: validate
+    if: github.ref == 'refs/heads/main' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging')
+
+    environment:
+      name: staging
+      url: https://staging.example.com
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: 📦 Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      # Simulate deployment (replace with actual deployment commands)
+      - name: 🚀 Deploy to Staging
+        run: |
+          echo "🎭 Deploying to staging environment..."
+          echo "Version: $(cat src/__init__.py | grep __version__ | cut -d'"' -f2)"
+          echo "Commit: ${{ github.sha }}"
+          # Add your actual deployment commands here, e.g.:
+          # - AWS: aws s3 sync . s3://staging-bucket/
+          # - Docker: docker push your-registry/app:staging
+          # - Kubernetes: kubectl apply -f k8s/staging/
+          echo "✅ Staging deployment complete!"
+
+      - name: 🧪 Run smoke tests
+        run: |
+          echo "Running smoke tests against staging..."
+          # Add actual smoke test commands here
+          python -c "from src.calculator import Calculator; c = Calculator(); assert c.add(2,2) == 4"
+          echo "✅ Smoke tests passed!"
+
+  # ===========================================================================
+  # JOB 5: Deploy to Production
+  # ===========================================================================
+  # Deploy to production (manual trigger or on release)
+  # ===========================================================================
+  deploy-production:
+    name: 🌟 Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [deploy-staging]
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production'
+
+    environment:
+      name: production
+      url: https://example.com
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: 📦 Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: 🚀 Deploy to Production
+        run: |
+          echo "🌟 Deploying to production environment..."
+          echo "Version: $(cat src/__init__.py | grep __version__ | cut -d'"' -f2)"
+          echo "Commit: ${{ github.sha }}"
+          # Add your actual production deployment commands here
+          echo "✅ Production deployment complete!"
+
+      - name: 📢 Notify deployment
+        run: |
+          echo "## 🚀 Production Deployment Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version**: $(cat src/__init__.py | grep __version__ | cut -d'"' -f2)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Deployed by**: ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Time**: $(date -u)" >> $GITHUB_STEP_SUMMARY

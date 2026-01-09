@@ -1,0 +1,26 @@
+# CODEOWNERS file
+# These owners will be the default owners for everything in the repo.
+# Unless a later match takes precedence, these users will be requested for
+# review when someone opens a pull request.
+
+# Default owners for all files
+* @yogeshwankhede007
+
+# Source code
+/src/ @yogeshwankhede007
+
+# Tests
+/tests/ @yogeshwankhede007
+
+# Documentation
+/docs/ @yogeshwankhede007
+README.md @yogeshwankhede007
+
+# CI/CD configuration
+/.github/ @yogeshwankhede007
+.github/workflows/ @yogeshwankhede007
+
+# Configuration files
+pyproject.toml @yogeshwankhede007
+requirements*.txt @yogeshwankhede007
+.pre-commit-config.yaml @yogeshwankhede007

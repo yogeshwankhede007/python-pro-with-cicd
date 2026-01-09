@@ -1,0 +1,3 @@
+# Requirements for the project (production dependencies)
+# This project has no external production dependencies
+
