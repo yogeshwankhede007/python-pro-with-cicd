@@ -6,7 +6,6 @@ demonstrating how to write reusable, well-tested utility code.
 """
 
 import re
-from typing import Optional
 
 
 def reverse_string(text: str) -> str:
@@ -26,7 +25,9 @@ def reverse_string(text: str) -> str:
     return text[::-1]
 
 
-def is_palindrome(text: str, ignore_case: bool = True, ignore_spaces: bool = True) -> bool:
+def is_palindrome(
+    text: str, ignore_case: bool = True, ignore_spaces: bool = True
+) -> bool:
     """
     Check if a string is a palindrome.
 
@@ -161,9 +162,7 @@ def extract_emails(text: str) -> list[str]:
     return re.findall(email_pattern, text)
 
 
-def mask_sensitive_data(
-    text: str, mask_char: str = "*", visible_chars: int = 4
-) -> str:
+def mask_sensitive_data(text: str, mask_char: str = "*", visible_chars: int = 4) -> str:
     """
     Mask sensitive data, showing only the last few characters.
 

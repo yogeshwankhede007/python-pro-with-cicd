@@ -98,7 +98,7 @@ class Calculator:
         Returns:
             base raised to the power of exponent
         """
-        result = base ** exponent
+        result = base**exponent
         self._record_operation(f"{base} ^ {exponent} = {result}")
         return result
 

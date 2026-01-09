@@ -5,16 +5,18 @@ These tests demonstrate testing validation functions
 with various valid and invalid inputs.
 """
 
-import pytest
 from datetime import datetime
+
+import pytest
+
 from src.validators import (
-    validate_email,
-    validate_phone,
-    validate_password,
-    validate_date,
-    validate_url,
     validate_credit_card,
+    validate_date,
+    validate_email,
     validate_json_schema,
+    validate_password,
+    validate_phone,
+    validate_url,
 )
 
 
@@ -82,7 +84,7 @@ class TestValidatePhone:
 
     def test_international_phone(self):
         """Test international phone format."""
-        assert validate_phone("+441onal234567890", "UK") is True
+        assert validate_phone("+441234567890", "UK") is True
 
 
 class TestValidatePassword:

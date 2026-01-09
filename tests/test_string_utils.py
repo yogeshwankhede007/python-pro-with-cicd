@@ -6,16 +6,17 @@ with different edge cases and scenarios.
 """
 
 import pytest
+
 from src.string_utils import (
-    reverse_string,
-    is_palindrome,
-    count_words,
-    truncate,
-    slugify,
     capitalize_words,
+    count_words,
     extract_emails,
-    mask_sensitive_data,
     find_common_prefix,
+    is_palindrome,
+    mask_sensitive_data,
+    reverse_string,
+    slugify,
+    truncate,
 )
 
 

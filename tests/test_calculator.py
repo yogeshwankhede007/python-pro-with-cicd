@@ -9,7 +9,8 @@ These tests demonstrate:
 """
 
 import pytest
-from src.calculator import Calculator, add, subtract, multiply, divide
+
+from src.calculator import Calculator, add, divide, multiply, subtract
 
 
 class TestCalculator:

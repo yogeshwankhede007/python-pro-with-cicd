@@ -12,6 +12,7 @@ from typing import Any, Optional
 
 class ValidationError(Exception):
     """Custom exception for validation errors."""
+
     pass
 
 
@@ -157,7 +158,11 @@ def validate_credit_card(card_number: str) -> dict[str, Any]:
 
     # Check if all digits
     if not cleaned.isdigit():
-        return {"valid": False, "card_type": None, "error": "Card number must contain only digits"}
+        return {
+            "valid": False,
+            "card_type": None,
+            "error": "Card number must contain only digits",
+        }
 
     # Detect card type
     card_type = None

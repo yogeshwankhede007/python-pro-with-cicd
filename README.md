@@ -300,15 +300,15 @@ git push origin feature/your-feature-name
 
 ### Tools We Use
 
-| Tool | Purpose | Configuration |
-|------|---------|---------------|
-| **Black** | Code formatting | `pyproject.toml` |
-| **isort** | Import sorting | `pyproject.toml` |
-| **flake8** | Linting | `.flake8` |
-| **mypy** | Type checking | `pyproject.toml` |
-| **Bandit** | Security scanning | `pyproject.toml` |
-| **pytest** | Testing | `pyproject.toml` |
-| **pre-commit** | Git hooks | `.pre-commit-config.yaml` |
+| Tool | Purpose | Why We Use It | Configuration |
+|------|---------|---------------|---------------|
+| **Black** | Code formatting | Ensures consistent code style across the project, eliminating debates about formatting | `pyproject.toml` |
+| **isort** | Import sorting | Automatically organizes imports in a standard order, improving code readability | `pyproject.toml` |
+| **flake8** | Linting | Catches code quality issues, bugs, and style violations before they reach production | `.flake8` |
+| **mypy** | Type checking | Detects type-related errors early, improving code reliability and maintainability | `pyproject.toml` |
+| **Bandit** | Security scanning | Identifies common security vulnerabilities in Python code (SQL injection, hardcoded secrets, etc.) | `pyproject.toml` |
+| **pytest** | Testing | Provides powerful testing framework with fixtures, parametrization, and coverage reporting | `pyproject.toml` |
+| **pre-commit** | Git hooks | Runs quality checks automatically before commits, catching issues before CI/CD | `.pre-commit-config.yaml` |
 
 ### Quality Gates
 
