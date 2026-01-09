@@ -1,5 +1,4 @@
-"""
-Python Project with CI/CD - A demonstration of real-world CI/CD practices.
+"""Python Project with CI/CD - A demonstration of real-world CI/CD practices.
 
 This package contains a simple calculator and utility functions to demonstrate
 how CI/CD pipelines work in a software development lifecycle.

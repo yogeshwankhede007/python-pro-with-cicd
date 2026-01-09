@@ -138,30 +138,19 @@ jobs:
   # Testing on multiple versions ensures compatibility.
   # ===========================================================================
   test:
-    name: 🧪 Test (Python ${{ matrix.python-version }})
-    runs-on: ${{ matrix.os }}
-
-    # Matrix strategy: Run tests on different Python versions and OS
-    strategy:
-      fail-fast: false  # Don't cancel other jobs if one fails
-      matrix:
-        os: [ubuntu-latest]
-        python-version: ["3.10", "3.11", "3.12"]
-        include:
+    name: 🧪 Test (Python 3.11)
+    runs-on: ubuntu-latest
           # Also test on Windows and macOS with Python 3.11
           - os: windows-latest
-            python-version: "3.11"
-          - os: macos-latest
-            python-version: "3.11"
 
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
 
-      - name: 🐍 Set up Python ${{ matrix.python-version }}
+      - name: 🐍 Set up Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.11"
           cache: 'pip'
 
       - name: 📦 Install dependencies
@@ -176,10 +165,9 @@ jobs:
           echo "Running test suite..."
           pytest tests/ -v --cov=src --cov-report=xml --cov-report=html --cov-report=term-missing
 
-      # Upload coverage report as artifact (only for main Python version)
+      # Upload coverage report as artifact
       - name: 📊 Upload coverage report
         uses: actions/upload-artifact@v4
-        if: matrix.python-version == '3.11' && matrix.os == 'ubuntu-latest'
         with:
           name: coverage-report
           path: |

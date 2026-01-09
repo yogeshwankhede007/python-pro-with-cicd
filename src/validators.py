@@ -1,5 +1,4 @@
-"""
-Data Validator Module - Input validation utilities.
+"""Data Validator Module - Input validation utilities.
 
 This module provides validation functions commonly needed in web applications
 and data processing pipelines.
@@ -17,8 +16,7 @@ class ValidationError(Exception):
 
 
 def validate_email(email: str) -> bool:
-    """
-    Validate an email address format.
+    """Validate an email address format.
 
     Args:
         email: The email address to validate
@@ -37,8 +35,7 @@ def validate_email(email: str) -> bool:
 
 
 def validate_phone(phone: str, country_code: str = "US") -> bool:
-    """
-    Validate a phone number format.
+    """Validate a phone number format.
 
     Args:
         phone: The phone number to validate
@@ -68,8 +65,7 @@ def validate_password(
     require_digit: bool = True,
     require_special: bool = True,
 ) -> dict[str, Any]:
-    """
-    Validate password strength.
+    """Validate password strength.
 
     Args:
         password: The password to validate
@@ -105,8 +101,7 @@ def validate_password(
 def validate_date(
     date_string: str, date_format: str = "%Y-%m-%d"
 ) -> tuple[bool, Optional[datetime]]:
-    """
-    Validate and parse a date string.
+    """Validate and parse a date string.
 
     Args:
         date_string: The date string to validate
@@ -123,8 +118,7 @@ def validate_date(
 
 
 def validate_url(url: str) -> bool:
-    """
-    Validate a URL format.
+    """Validate a URL format.
 
     Args:
         url: The URL to validate
@@ -144,8 +138,7 @@ def validate_url(url: str) -> bool:
 
 
 def validate_credit_card(card_number: str) -> dict[str, Any]:
-    """
-    Validate a credit card number using Luhn algorithm.
+    """Validate a credit card number using Luhn algorithm.
 
     Args:
         card_number: The card number to validate
@@ -197,8 +190,7 @@ def validate_credit_card(card_number: str) -> dict[str, Any]:
 
 
 def validate_json_schema(data: dict, schema: dict) -> dict[str, Any]:
-    """
-    Simple JSON schema validation.
+    """Simple JSON schema validation.
 
     Args:
         data: The data dictionary to validate

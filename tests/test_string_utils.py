@@ -1,5 +1,4 @@
-"""
-Unit tests for the String Utilities module.
+"""Unit tests for the String Utilities module.
 
 These tests demonstrate testing various string manipulation functions
 with different edge cases and scenarios.

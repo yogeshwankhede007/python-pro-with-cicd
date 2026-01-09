@@ -1,5 +1,4 @@
-"""
-Unit tests for the Calculator module.
+"""Unit tests for the Calculator module.
 
 These tests demonstrate:
 - Testing individual methods

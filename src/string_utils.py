@@ -1,5 +1,4 @@
-"""
-String Utilities Module - Common string manipulation functions.
+"""String Utilities Module - Common string manipulation functions.
 
 This module provides utility functions for string operations,
 demonstrating how to write reusable, well-tested utility code.
@@ -9,8 +8,7 @@ import re
 
 
 def reverse_string(text: str) -> str:
-    """
-    Reverse a string.
+    """Reverse a string.
 
     Args:
         text: The string to reverse
@@ -28,8 +26,7 @@ def reverse_string(text: str) -> str:
 def is_palindrome(
     text: str, ignore_case: bool = True, ignore_spaces: bool = True
 ) -> bool:
-    """
-    Check if a string is a palindrome.
+    """Check if a string is a palindrome.
 
     Args:
         text: The string to check
@@ -54,8 +51,7 @@ def is_palindrome(
 
 
 def count_words(text: str) -> int:
-    """
-    Count the number of words in a string.
+    """Count the number of words in a string.
 
     Args:
         text: The string to count words in
@@ -73,8 +69,7 @@ def count_words(text: str) -> int:
 
 
 def truncate(text: str, max_length: int, suffix: str = "...") -> str:
-    """
-    Truncate a string to a maximum length.
+    """Truncate a string to a maximum length.
 
     Args:
         text: The string to truncate
@@ -101,8 +96,7 @@ def truncate(text: str, max_length: int, suffix: str = "...") -> str:
 
 
 def slugify(text: str) -> str:
-    """
-    Convert a string to a URL-friendly slug.
+    """Convert a string to a URL-friendly slug.
 
     Args:
         text: The string to slugify
@@ -128,8 +122,7 @@ def slugify(text: str) -> str:
 
 
 def capitalize_words(text: str) -> str:
-    """
-    Capitalize the first letter of each word.
+    """Capitalize the first letter of each word.
 
     Args:
         text: The string to capitalize
@@ -145,8 +138,7 @@ def capitalize_words(text: str) -> str:
 
 
 def extract_emails(text: str) -> list[str]:
-    """
-    Extract all email addresses from a string.
+    """Extract all email addresses from a string.
 
     Args:
         text: The string to search for emails
@@ -163,8 +155,7 @@ def extract_emails(text: str) -> list[str]:
 
 
 def mask_sensitive_data(text: str, mask_char: str = "*", visible_chars: int = 4) -> str:
-    """
-    Mask sensitive data, showing only the last few characters.
+    """Mask sensitive data, showing only the last few characters.
 
     Args:
         text: The sensitive string to mask
@@ -185,8 +176,7 @@ def mask_sensitive_data(text: str, mask_char: str = "*", visible_chars: int = 4)
 
 
 def find_common_prefix(strings: list[str]) -> str:
-    """
-    Find the longest common prefix among a list of strings.
+    """Find the longest common prefix among a list of strings.
 
     Args:
         strings: List of strings to find common prefix

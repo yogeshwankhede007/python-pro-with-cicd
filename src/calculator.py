@@ -1,5 +1,4 @@
-"""
-Calculator Module - Provides basic arithmetic operations.
+"""Calculator Module - Provides basic arithmetic operations.
 
 This module demonstrates how to write clean, testable code that can be
 easily validated through automated CI/CD pipelines.
@@ -18,8 +17,7 @@ class Calculator:
         self.history: list[str] = []
 
     def add(self, a: Number, b: Number) -> Number:
-        """
-        Add two numbers together.
+        """Add two numbers together.
 
         Args:
             a: First number
@@ -38,8 +36,7 @@ class Calculator:
         return result
 
     def subtract(self, a: Number, b: Number) -> Number:
-        """
-        Subtract second number from first.
+        """Subtract second number from first.
 
         Args:
             a: First number (minuend)
@@ -53,8 +50,7 @@ class Calculator:
         return result
 
     def multiply(self, a: Number, b: Number) -> Number:
-        """
-        Multiply two numbers.
+        """Multiply two numbers.
 
         Args:
             a: First number
@@ -68,8 +64,7 @@ class Calculator:
         return result
 
     def divide(self, a: Number, b: Number) -> float:
-        """
-        Divide first number by second.
+        """Divide first number by second.
 
         Args:
             a: Dividend
@@ -88,8 +83,7 @@ class Calculator:
         return result
 
     def power(self, base: Number, exponent: Number) -> Number:
-        """
-        Raise base to the power of exponent.
+        """Raise base to the power of exponent.
 
         Args:
             base: The base number
@@ -103,8 +97,7 @@ class Calculator:
         return result
 
     def modulo(self, a: Number, b: Number) -> Number:
-        """
-        Calculate the modulo (remainder) of division.
+        """Calculate remainder of division.
 
         Args:
             a: Dividend
@@ -127,8 +120,7 @@ class Calculator:
         self.history.append(operation)
 
     def get_history(self) -> list[str]:
-        """
-        Get the history of all operations performed.
+        """Get the history of all operations performed.
 
         Returns:
             List of operation strings

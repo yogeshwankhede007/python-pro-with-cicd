@@ -1,5 +1,4 @@
-"""
-Unit tests for the Validators module.
+"""Unit tests for the Validators module.
 
 These tests demonstrate testing validation functions
 with various valid and invalid inputs.
