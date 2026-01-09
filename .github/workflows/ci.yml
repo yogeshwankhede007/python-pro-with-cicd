@@ -134,14 +134,13 @@ jobs:
   # ===========================================================================
   # JOB 3: Unit Testing
   # ===========================================================================
-  # This job runs our test suite across multiple Python versions.
-  # Testing on multiple versions ensures compatibility.
+  # JOB 3: Unit Testing
+  # ===========================================================================
+  # This job runs our test suite with Python 3.11.
   # ===========================================================================
   test:
     name: 🧪 Test (Python 3.11)
     runs-on: ubuntu-latest
-          # Also test on Windows and macOS with Python 3.11
-          - os: windows-latest
 
     steps:
       - name: 📥 Checkout code
