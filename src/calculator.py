@@ -12,7 +12,7 @@ Number = Union[int, float]
 class Calculator:
     """A simple calculator class demonstrating OOP principles."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the calculator with a history of operations."""
         self.history: list[str] = []
 

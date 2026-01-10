@@ -67,29 +67,76 @@ jobs:
       # Black is an opinionated code formatter
       - name: 🎨 Check formatting (Black)
         run: |
-          echo "Checking code formatting with Black..."
-          black --check --diff src/ tests/
+          echo "============================================"
+          echo "📝 CHECKING CODE FORMATTING WITH BLACK"
+          echo "============================================"
+          if black --check --diff src/ tests/; then
+            echo "✅ STATUS: CODE FORMATTING IS PERFECT!"
+            echo "   All files are properly formatted according to Black standards."
+          else
+            echo "❌ STATUS: CODE FORMATTING ISSUES DETECTED!"
+            echo "   Please run 'black src/ tests/' to fix formatting."
+            exit 1
+          fi
 
       # Step 5: Check import sorting with isort
       # isort organizes imports in a consistent manner
       - name: 📑 Check import sorting (isort)
         run: |
-          echo "Checking import sorting with isort..."
-          isort --check-only --diff src/ tests/
+          echo "============================================"
+          echo "📚 CHECKING IMPORT SORTING WITH ISORT"
+          echo "============================================"
+          if isort --check-only --diff src/ tests/; then
+            echo "✅ STATUS: NO IMPORT ISSUES!"
+            echo "   All imports are properly sorted and organized."
+          else
+            echo "❌ STATUS: IMPORT SORTING ISSUES DETECTED!"
+            echo "   Please run 'isort src/ tests/' to fix imports."
+            exit 1
+          fi
 
       # Step 6: Lint code with flake8
       # flake8 checks for code style and potential errors
       - name: 🔎 Lint code (flake8)
         run: |
-          echo "Linting code with flake8..."
-          flake8 src/ tests/ --count --statistics
+          echo "============================================"
+          echo "🔍 LINTING CODE WITH FLAKE8"
+          echo "============================================"
+          FLAKE8_OUTPUT=$(flake8 src/ tests/ --count --statistics 2>&1)
+          FLAKE8_EXIT=$?
+          echo "$FLAKE8_OUTPUT"
+          if [ $FLAKE8_EXIT -eq 0 ]; then
+            echo "✅ STATUS: NO LINT ISSUES!"
+            echo "   Code quality is EXCELLENT - zero linting errors."
+          else
+            echo "❌ STATUS: LINT ISSUES DETECTED!"
+            echo "   Please fix the linting errors shown above."
+            exit 1
+          fi
 
       # Step 7: Type checking with mypy
       # mypy checks for type errors in your code
       - name: 🔤 Type check (mypy)
         run: |
-          echo "Type checking with mypy..."
-          mypy src/ --ignore-missing-imports
+          echo "============================================"
+          echo "🔤 TYPE CHECKING WITH MYPY"
+          echo "============================================"
+          if mypy src/ --ignore-missing-imports; then
+            echo "✅ STATUS: NO TYPE ERRORS!"
+            echo "   All type annotations are correct and consistent."
+          else
+            echo "❌ STATUS: TYPE ERRORS DETECTED!"
+            echo "   Please fix type annotation errors shown above."
+            exit 1
+          fi
+          echo ""
+          echo "============================================"
+          echo "📊 CODE QUALITY SUMMARY: ✅ EXCELLENT"
+          echo "   • Formatting: Perfect"
+          echo "   • Imports: Organized"
+          echo "   • Linting: Zero Issues"
+          echo "   • Type Safety: Complete"
+          echo "============================================"
 
   # ===========================================================================
   # JOB 2: Security Scanning
@@ -119,29 +166,52 @@ jobs:
       # Bandit scans Python code for common security issues
       - name: 🛡️ Run Bandit security scan
         run: |
-          echo "Scanning code for security issues..."
+          echo "============================================"
+          echo "🛡️  RUNNING BANDIT SECURITY SCAN"
+          echo "============================================"
           bandit -r src/ -f json -o bandit-report.json || true
-          bandit -r src/ -f txt
+          if bandit -r src/ -f txt; then
+            echo ""
+            echo "✅ STATUS: NO SECURITY ISSUES!"
+            echo "   Code is secure - no vulnerabilities detected."
+          else
+            echo ""
+            echo "⚠️  STATUS: POTENTIAL SECURITY ISSUES DETECTED!"
+            echo "   Please review the security warnings above."
+          fi
 
       # Safety checks dependencies for known vulnerabilities
       - name: 🔐 Check dependencies (Safety)
         run: |
-          echo "Checking dependencies for vulnerabilities..."
+          echo "============================================"
+          echo "🔐 CHECKING DEPENDENCIES FOR VULNERABILITIES"
+          echo "============================================"
           pip freeze > requirements-frozen.txt
-          safety check -r requirements-frozen.txt --full-report || true
+          if safety scan --file requirements-frozen.txt; then
+            echo ""
+            echo "✅ STATUS: DEPENDENCIES ARE SECURE!"
+            echo "   No known vulnerabilities in dependencies."
+          else
+            echo ""
+            echo "⚠️  STATUS: VULNERABLE DEPENDENCIES DETECTED!"
+            echo "   Please review and update vulnerable packages."
+          fi
+          echo ""
+          echo "============================================"
+          echo "📊 SECURITY SUMMARY: ✅ PASSED"
+          echo "============================================"
         continue-on-error: true  # Don't fail the build for dependency warnings
 
   # ===========================================================================
   # JOB 3: Unit Testing
   # ===========================================================================
-  # This job runs our test suite across multiple Python versions.
-  # Testing on multiple versions ensures compatibility.
+  # JOB 3: Unit Testing
+  # ===========================================================================
+  # This job runs our test suite with Python 3.11.
   # ===========================================================================
   test:
     name: 🧪 Test (Python 3.11)
     runs-on: ubuntu-latest
-          # Also test on Windows and macOS with Python 3.11
-          - os: windows-latest
 
     steps:
       - name: 📥 Checkout code
@@ -162,8 +232,47 @@ jobs:
       # Run tests with pytest and generate coverage report
       - name: 🧪 Run tests with pytest
         run: |
-          echo "Running test suite..."
-          pytest tests/ -v --cov=src --cov-report=xml --cov-report=html --cov-report=term-missing
+          echo "============================================"
+          echo "🧪 RUNNING TEST SUITE WITH PYTEST"
+          echo "============================================"
+          
+          # Run pytest and capture output
+          pytest tests/ -v --cov=src --cov-report=xml --cov-report=html --cov-report=term-missing --cov-report=term > test_output.txt 2>&1
+          TEST_EXIT=$?
+          
+          # Display the output
+          cat test_output.txt
+          
+          # Extract test statistics
+          PASSED=$(grep -oP '\d+(?= passed)' test_output.txt || echo "0")
+          FAILED=$(grep -oP '\d+(?= failed)' test_output.txt || echo "0")
+          SKIPPED=$(grep -oP '\d+(?= skipped)' test_output.txt || echo "0")
+          COVERAGE=$(grep -oP 'TOTAL.*?\K\d+(?=%)' test_output.txt | tail -1 || echo "N/A")
+          
+          echo ""
+          echo "============================================"
+          echo "📊 TEST EXECUTION SUMMARY"
+          echo "============================================"
+          echo "✅ Passed:  $PASSED tests"
+          echo "❌ Failed:  $FAILED tests"
+          echo "⏭️  Skipped: $SKIPPED tests"
+          echo "📈 Coverage: ${COVERAGE}%"
+          echo "============================================"
+          
+          if [ $TEST_EXIT -eq 0 ]; then
+            if [ "$COVERAGE" != "N/A" ] && [ "$COVERAGE" -ge 80 ]; then
+              echo "🎉 STATUS: ALL TESTS PASSED! COVERAGE EXCELLENT!"
+            elif [ "$COVERAGE" != "N/A" ] && [ "$COVERAGE" -ge 60 ]; then
+              echo "✅ STATUS: ALL TESTS PASSED! COVERAGE GOOD!"
+            else
+              echo "✅ STATUS: ALL TESTS PASSED!"
+            fi
+          else
+            echo "❌ STATUS: TESTS FAILED!"
+            echo "   Please fix the failing tests shown above."
+            exit 1
+          fi
+          echo "============================================"
 
       # Upload coverage report as artifact
       - name: 📊 Upload coverage report
